@@ -36,3 +36,10 @@
     transform: rotate(360deg);
   }
 }
+
+
+@media screen and (max-width: 450px) {
+  .formMobile {
+    max-width: 80%;
+  }
+}
