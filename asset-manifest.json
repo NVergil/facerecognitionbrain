@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/facerecognitionbrain/static/css/main.c83e554c.css",
+    "main.js": "/facerecognitionbrain/static/js/main.6c80bc47.js",
+    "static/media/brain.png": "/facerecognitionbrain/static/media/brain.610e1112f72ae9b8900a.png",
+    "index.html": "/facerecognitionbrain/index.html",
+    "main.c83e554c.css.map": "/facerecognitionbrain/static/css/main.c83e554c.css.map",
+    "main.6c80bc47.js.map": "/facerecognitionbrain/static/js/main.6c80bc47.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.c83e554c.css",
+    "static/js/main.6c80bc47.js"
+  ]
+}
