@@ -24,7 +24,10 @@ class Register extends React.Component {
     if (!email || !password || !name) {
       return;
     }
-    let res = await fetch("http://localhost:8080/register", {
+    if (password.length < 6) {
+      return;
+    }
+    let res = await fetch("https://smart-brain-postgresql-production.up.railway.app/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -100,6 +103,7 @@ class Register extends React.Component {
                   id="password"
                   required
                   onChange={this.onPasswordChange}
+                  minLength="6"
                 />
               </div>
             </fieldset>

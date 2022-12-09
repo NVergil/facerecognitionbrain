@@ -37,7 +37,7 @@ class SignIn extends React.Component {
         });
       }, 2000);
     }
-    let res = await fetch("http://localhost:8080/signin", {
+    let res = await fetch("https://smart-brain-postgresql-production.up.railway.app/signin", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

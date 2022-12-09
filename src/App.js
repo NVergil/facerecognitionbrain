@@ -1,7 +1,6 @@
 import "./App.css";
 import Navigation from "./components/Navigation/Navigation";
 import Logo from "./components/Logo/Logo";
-import Clarifai from "clarifai";
 import ImageLinkForm from "./components/ImageLinkForm/ImageLinkForm";
 import FaceRecognition from "./components/FaceRecognition/FaceRecognition";
 import Rank from "./components/Rank/Rank";
@@ -10,27 +9,25 @@ import Register from "./components/Register/Register";
 import ParticlesBg from "particles-bg";
 import { Component, Fragment } from "react";
 
-const app = new Clarifai.App({
-  apiKey: "269155e7e1e448a0abcdb14ba26da106",
-});
-
+const initialState = {
+  input: "",
+  imageUrl: "",
+  box: {},
+  route: "signin",
+  isSignIn: false,
+  imgMessage: "",
+  user: {
+    id: "",
+    name: "",
+    email: "",
+    entries: 0,
+    joined: "",
+  },
+};
 class App extends Component {
   constructor() {
     super();
-    this.state = {
-      input: "",
-      imageUrl: "",
-      box: {},
-      route: "signin",
-      isSignIn: false,
-      user: {
-        id: "",
-        name: "",
-        email: "",
-        entries: 0,
-        joined: "",
-      },
-    };
+    this.state = initialState;
   }
   loadUser = (data) => {
     this.setState({
@@ -69,11 +66,27 @@ class App extends Component {
 
   imageSendToRecognition = () => {
     this.setState({ imageUrl: this.state.input });
-    app.models
-      .predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
+    if (!this.state.input) {
+      this.setState({
+        imgMessage: "Insert a valid image url",
+      });
+      return setTimeout(() => {
+        this.setState({
+          imgMessage: "",
+        });
+      }, 2000);
+    }
+    fetch("https://smart-brain-postgresql-production.up.railway.app/imageurl", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        input: this.state.input,
+      }),
+    })
+      .then((response) => response.json())
       .then((response) => {
         if (response) {
-          fetch("http://localhost:8080/image", {
+          fetch("https://smart-brain-postgresql-production.up.railway.app/image", {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -83,14 +96,24 @@ class App extends Component {
             .then((response) => response.json())
             .then((count) => {
               this.setState(Object.assign(this.state.user, { entries: count }));
-            });
+            })
+            .catch(console.log);
         }
         this.displayFaceBox(this.calculateFaceLocation(response));
       })
       // console.log(
       //   response.outputs[0].data.regions[0].region_info.bounding_box
       // );
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        this.setState({
+          imgMessage: "Insert a valid image url",
+        });
+        return setTimeout(() => {
+          this.setState({
+            imgMessage: "",
+          });
+        }, 2000);
+      });
   };
 
   onButtonSubmit = () => {
@@ -105,7 +128,7 @@ class App extends Component {
 
   onRouteChange = (route) => {
     if (route === "signin") {
-      this.setState({ isSignIn: false });
+      this.setState(initialState);
     } else if (route === "home") {
       this.setState({ isSignIn: true });
     }
@@ -131,6 +154,7 @@ class App extends Component {
               onInputChange={this.onInputChange}
               onButtonSubmit={this.onButtonSubmit}
               onEnterKeydown={this.onEnterKeydown}
+              imgUrlMessage={this.state.imgMessage}
             />
             <FaceRecognition
               box={this.state.box}
